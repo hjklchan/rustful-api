@@ -1,7 +1,6 @@
 use std::net::SocketAddr;
 
-use axum::Router;
-use rustful_api::{app_state::AppState, db};
+use rustful_api::{app_state::AppState, db, http};
 use tokio::net::TcpListener;
 
 #[tokio::main]
@@ -19,7 +18,7 @@ async fn main() {
     };
 
     // 实例化 App
-    let app = Router::new().with_state(app_state);
+    let app = http::router_with_state(app_state);
     // 启动服务
     let socket_addr = SocketAddr::from(([0, 0, 0, 0], 8888));
     let tcp_listener = TcpListener::bind(socket_addr).await.unwrap();
