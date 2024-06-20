@@ -1,8 +1,8 @@
 use std::net::SocketAddr;
 
 use axum::Router;
+use rustful_api::app_state::AppState;
 use tokio::net::TcpListener;
-
 
 #[tokio::main]
 async fn main() {
@@ -10,7 +10,7 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     // 实例化 App
-    let app = Router::new();
+    let app = Router::new().with_state(AppState {});
     // 启动服务
     let socket_addr = SocketAddr::from(([0, 0, 0, 0], 8888));
     let tcp_listener = TcpListener::bind(socket_addr).await.unwrap();
