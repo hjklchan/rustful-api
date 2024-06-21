@@ -18,7 +18,11 @@ impl IntoResponse for ServiceError {
         let message = self.to_string();
 
         let (status_code, code) = match self {
-            Self::SqlxError(_err) => (StatusCode::INTERNAL_SERVER_ERROR, "DATABASE_ERROR"),
+            Self::SqlxError(err_kind) => match err_kind {
+                // TODO: Need to test
+                sqlx::Error::RowNotFound => (StatusCode::NOT_FOUND, "ROW_NOT_FOUND"),
+                _ => (StatusCode::INTERNAL_SERVER_ERROR, "DATABASE_ERROR"),
+            }
             Self::NotFound => (StatusCode::NOT_FOUND, "RESOURCE_NOT_FOUND"),
             Self::RouteNotFound => (StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND"),
         };
