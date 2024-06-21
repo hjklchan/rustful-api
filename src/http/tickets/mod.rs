@@ -9,10 +9,10 @@ mod update;
 
 pub fn routes(app_state: AppState) -> Router {
     Router::new()
-        .route("/", routing::post(create::create_handler))
-        .route("/:ticket_id", routing::delete(delete::delete_handler))
-        .route("/:ticket_id", routing::put(update::update_handler))
-        .route("/:ticket_id", routing::get(get::get_handler))
-        .route("/", routing::get(list::list_handler))
+        .route("/tickets", routing::post(create::create_handler))
+        .route("/tickets/:ticket_id", routing::delete(delete::delete_handler))
+        .route("/tickets/:ticket_id", routing::put(update::update_handler))
+        .route("/tickets/:ticket_id", routing::get(get::get_handler))
+        .route("/tickets", routing::get(list::list_handler))
         .with_state(app_state)
 }
