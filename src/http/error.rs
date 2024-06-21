@@ -1,5 +1,4 @@
 use axum::{http::StatusCode, response::IntoResponse, Json};
-use serde::Serialize;
 use thiserror::Error;
 
 use super::response::ErrResponse;
