@@ -17,11 +17,15 @@ where
         match self {
             Self::Ok => (StatusCode::OK).into_response(),
             Self::Created => (StatusCode::CREATED).into_response(),
+            // Ordinary data
             // 普通数据
             Self::Data(data) => (StatusCode::OK, Json(data)).into_response(),
+            // Pagination data
             // 分页数据
             Self::PaginationData(pagination) => match pagination {
+                // Cursor
                 Pagination::Cursor(data) => (StatusCode::OK, Json(data)).into_response(),
+                // Offset
                 Pagination::Offset(data) => (StatusCode::OK, Json(data)).into_response(),
             },
         }
@@ -42,9 +46,9 @@ pub struct CursorPagination<T> {
 #[derive(Debug, Serialize)]
 pub struct OffsetPagination<T> {
     pub items: Vec<T>,
-    pub page: u64,
-    pub size: u64,
-    pub total: u64,
+    pub page: i64,
+    pub size: i64,
+    pub total: i64,
 }
 
 #[derive(Debug, Serialize)]
