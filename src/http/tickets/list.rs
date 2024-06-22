@@ -1,8 +1,13 @@
-use crate::http::{
-    error::ServiceError, response::{OffsetPagination, Pagination, Response}, OhMyResult
+use crate::{
+    http::{
+        error::ServiceError,
+        response::{OffsetPagination, Pagination, Response},
+        OhMyResult,
+    },
+    toolkit::pagination::PaginationQueries,
 };
 use axum::extract::Query;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct Ticket {
@@ -10,12 +15,12 @@ pub struct Ticket {
     title: String,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Queries {
-    result: u8
-}
-
-pub async fn list_handler(Query(queries): Query<Queries>) -> OhMyResult<Response<Ticket>> {
+pub async fn list_handler(
+    Query(_queries): Query<PaginationQueries>,
+) -> OhMyResult<Response<Ticket>> {
+    let limit_sql = _queries.to_sql();
+    println!("{limit_sql:?}");
+    
     let tickets = vec![
         Ticket {
             id: 100,
@@ -26,23 +31,13 @@ pub async fn list_handler(Query(queries): Query<Queries>) -> OhMyResult<Response
             title: "How to deploy axum app on ubuntu system".to_string(),
         },
     ];
-    
-    match queries.result {
-        0 => {
-            Ok(Response::PaginationData(Pagination::Offset(
-                OffsetPagination {
-                    items: tickets,
-                    page: 1,
-                    size: 20,
-                    total: 1,
-                },
-            )))
+
+    Ok(Response::PaginationData(Pagination::Offset(
+        OffsetPagination {
+            items: tickets,
+            page: 1,
+            size: 20,
+            total: 1,
         },
-        1 => {
-            Err(ServiceError::SqlxError(sqlx::Error::RowNotFound))
-        },
-        _ => {
-            Ok(Response::Ok)
-        },
-    }
+    )))
 }
