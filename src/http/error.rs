@@ -1,6 +1,8 @@
 use axum::{http::StatusCode, response::IntoResponse};
 use thiserror::Error;
 
+use crate::utils::pagination::PaginationError;
+
 use super::response::ErrResponse;
 
 #[derive(Debug, Error)]
@@ -11,6 +13,8 @@ pub enum ServiceError {
     NotFound,
     #[error("route does not exist")]
     RouteNotFound,
+    #[error(transparent)]
+    PaginationError(#[from] PaginationError),
 }
 
 impl IntoResponse for ServiceError {
@@ -25,6 +29,7 @@ impl IntoResponse for ServiceError {
             }
             Self::NotFound => (StatusCode::NOT_FOUND, "RESOURCE_NOT_FOUND"),
             Self::RouteNotFound => (StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND"),
+            Self::PaginationError(err) => (StatusCode::BAD_REQUEST, "PAGINATION_ERROR"),
         };
 
         (status_code, ErrResponse::new(code, message)).into_response()
