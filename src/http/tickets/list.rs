@@ -3,7 +3,7 @@ use crate::{
         response::{OffsetPagination, Pagination, Response},
         OhMyResult,
     },
-    toolkit::pagination::PaginationQueries,
+    utils::pagination::PaginationQueries,
 };
 use axum::extract::Query;
 use serde::Serialize;
