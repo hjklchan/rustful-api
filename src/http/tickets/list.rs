@@ -18,8 +18,6 @@ pub async fn list_handler(
     Query(queries): Query<PaginationQueries>,
 ) -> OhMyResult<Response<Ticket>> {
     let _limit_sql = queries.to_sql();
-    println!("{_limit_sql:?}");
-    
     let tickets = vec![
         Ticket {
             id: 100,
@@ -35,7 +33,7 @@ pub async fn list_handler(
         OffsetPagination {
             items: tickets,
             page: 1,
-            size: 20,
+            size: 10,
             total: 1,
         },
     )))
