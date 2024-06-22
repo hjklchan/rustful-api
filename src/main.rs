@@ -11,7 +11,7 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     // 初始化数据库连接池
-    let db_pool = db::must_connect_pool("mysql://root:@127.0.0.1:3306/test").await;
+    let db_pool = db::must_connect_pool("mysql://root:@127.0.0.1:3306/rustful_api").await;
     tracing::info!("Database is connected");
 
     // 实例化全局状态
