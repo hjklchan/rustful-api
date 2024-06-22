@@ -1,12 +1,15 @@
 use crate::{
+    app_state::AppState,
     http::{
+        error::ServiceError,
         response::{OffsetPagination, Pagination, Response},
         OhMyResult,
     },
     utils::pagination::PaginationQueries,
 };
-use axum::extract::Query;
+use axum::extract::{Query, State};
 use serde::Serialize;
+use sqlx::prelude::FromRow;
 
 #[derive(Debug, Serialize)]
 pub struct Ticket {
@@ -14,24 +17,37 @@ pub struct Ticket {
     title: String,
 }
 
+#[derive(Debug, FromRow, Serialize)]
+pub struct ListItem {
+    pub id: u64,
+    pub title: String,
+    pub description: String,
+}
+
 pub async fn list_handler(
+    State(AppState { ref pool }): State<AppState>,
     Query(queries): Query<PaginationQueries>,
-) -> OhMyResult<Response<Ticket>> {
-    let _limit_sql = queries.to_sql();
-    let tickets = vec![
-        Ticket {
-            id: 100,
-            title: "How to make a good axum api?".to_string(),
-        },
-        Ticket {
-            id: 104,
-            title: "How to deploy axum app on ubuntu system".to_string(),
-        },
-    ];
+) -> OhMyResult<Response<ListItem>> {
+    let limit_sql = queries
+        .to_sql()
+        .map_err(|err| ServiceError::PaginationError(err))?;
+
+    let sql = format!(
+        "SELECT `id`, `title`, `description` FROM `articles` WHERE `deleted_at` IS NOT NULL {}",
+        limit_sql
+    );
+
+    let items: Vec<ListItem> =
+        sqlx::query_as(&sql)
+            .fetch_all(pool)
+            .await
+            .map_err(|err| match err {
+                err => ServiceError::SqlxError(err),
+            })?;
 
     Ok(Response::PaginationData(Pagination::Offset(
         OffsetPagination {
-            items: tickets,
+            items,
             page: 1,
             size: 10,
             total: 1,
