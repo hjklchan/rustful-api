@@ -1,6 +1,5 @@
 use crate::{
     http::{
-        error::ServiceError,
         response::{OffsetPagination, Pagination, Response},
         OhMyResult,
     },
@@ -16,10 +15,10 @@ pub struct Ticket {
 }
 
 pub async fn list_handler(
-    Query(_queries): Query<PaginationQueries>,
+    Query(queries): Query<PaginationQueries>,
 ) -> OhMyResult<Response<Ticket>> {
-    let limit_sql = _queries.to_sql();
-    println!("{limit_sql:?}");
+    let _limit_sql = queries.to_sql();
+    println!("{_limit_sql:?}");
     
     let tickets = vec![
         Ticket {

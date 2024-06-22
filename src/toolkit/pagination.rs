@@ -10,6 +10,8 @@ pub enum PaginationError {
     LimitExceeded,
 }
 
+// TODO: PaginationQueries 应该实现 FromRequest 或者 FromRequestParts
+// TODO: PaginationQueries should implements FromRequest or FromRequestParts
 #[derive(Debug, Deserialize)]
 pub struct PaginationQueries {
     #[serde(default)]

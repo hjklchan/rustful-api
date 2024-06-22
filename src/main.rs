@@ -3,7 +3,7 @@ use std::net::SocketAddr;
 use axum::http::Method;
 use rustful_api::{app_state::AppState, db, http};
 use tokio::net::TcpListener;
-use tower_http::cors::{self, Cors, CorsLayer};
+use tower_http::cors::{self, CorsLayer};
 
 #[tokio::main]
 async fn main() {
