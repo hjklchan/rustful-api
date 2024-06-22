@@ -20,6 +20,16 @@ pub struct PaginationQueries {
     size: i64,
 }
 
+// TODO: Default
+impl Default for PaginationQueries {
+    fn default() -> Self {
+        Self {
+            page: Default::default(),
+            size: Default::default(),
+        }
+    }
+}
+
 impl PaginationQueries {
     pub fn to_sql(self) -> Result<String, PaginationError> {
         if self.size > MAX_LIMIT {
