@@ -50,3 +50,13 @@ impl PaginationQueries {
         Ok(format!(" LIMIT {} OFFSET {}", limit, offset))
     }
 }
+
+impl PaginationQueries {
+    pub fn page(self) -> i64 {
+        self.page
+    }
+
+    pub fn size(self) -> i64 {
+        self.size
+    }
+}
