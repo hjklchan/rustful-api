@@ -1,7 +1,6 @@
 pub mod error;
 pub mod response;
 pub mod articles;
-pub mod tickets;
 
 use crate::app_state::AppState;
 use axum::Router;
