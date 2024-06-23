@@ -11,12 +11,6 @@ use axum::extract::{Query, State};
 use serde::Serialize;
 use sqlx::prelude::FromRow;
 
-#[derive(Debug, Serialize)]
-pub struct Ticket {
-    id: u64,
-    title: String,
-}
-
 #[derive(Debug, FromRow, Serialize)]
 pub struct ListItem {
     pub id: u64,
