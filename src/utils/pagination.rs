@@ -47,7 +47,7 @@ impl PaginationQueries {
         let limit = size;
         let offset = (page - 1) * limit;
         // Output sql of string type
-        Ok(format!(" LIMIT {} OFFSET {}", limit, offset))
+        Ok(format!("LIMIT {} OFFSET {}", limit, offset))
     }
 }
 
