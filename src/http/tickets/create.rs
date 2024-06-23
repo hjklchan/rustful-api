@@ -1,4 +1,3 @@
-use anyhow::Ok;
 use axum::{extract::State, Json};
 use serde::Deserialize;
 
