@@ -20,8 +20,8 @@ pub struct Ticket {
 #[derive(Debug, FromRow, Serialize)]
 pub struct ListItem {
     pub id: u64,
-    pub title: String,
-    pub description: String,
+    pub title: Option<String>,
+    pub description: Option<String>,
 }
 
 pub async fn list_handler(
@@ -33,7 +33,7 @@ pub async fn list_handler(
         .map_err(|err| ServiceError::PaginationError(err))?;
 
     let sql = format!(
-        "SELECT `id`, `title`, `description` FROM `articles` WHERE `deleted_at` IS NOT NULL {}",
+        "SELECT `id`, `title`, `description` FROM `articles` WHERE `deleted_at` IS NULL {}",
         limit_sql
     );
 
