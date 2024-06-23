@@ -3,6 +3,11 @@ use serde::Serialize;
 use std::error::Error;
 use tinytemplate::TinyTemplate;
 
+// TODO: Do some optimisation
+// 1. Error handing
+// 2. Organize path-related variables
+// 3. Split into separate files or modules
+
 #[derive(Serialize)]
 struct HandlerContext<'a> {
     operation: &'a str,
