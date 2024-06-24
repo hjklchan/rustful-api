@@ -52,7 +52,7 @@ fn main() {
 }
 
 fn create_module(path: Option<String>, name: Option<String>) -> () {
-    static CRUD_FILES: [&'static str; 5] = ["create", "delete", "update", "get", "list"];
+    static OPERATIONS: [&'static str; 5] = ["create", "delete", "update", "get", "list"];
 
     let module_name = match &name {
         Some(value) => value,
@@ -68,7 +68,7 @@ fn create_module(path: Option<String>, name: Option<String>) -> () {
     match fs::create_dir(relative_path) {
         Ok(()) => {
             // Create CRUD rs files.
-            CRUD_FILES.map(|operation| {
+            OPERATIONS.map(|operation| {
                 // Opr as file name.
                 let file_path = format!("{}/{}.rs", relative_path, operation);
                 let template_str = handler_template::make(operation).unwrap();
