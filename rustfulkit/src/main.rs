@@ -1,12 +1,14 @@
 use clap::{Args, Parser, Subcommand};
+use rustfulkit::template;
 use std::{fs, io::Write};
 
-mod template;
+// TODO: Do some optimisation
+// 1. Error handing
+// 2. Organize path-related variables
 
 /// A fictional versioning CLI
 #[derive(Debug, Parser)] // requires `derive` feature
 #[command(name = "git")]
-#[command(about = "A fictional versioning CLI", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -69,7 +71,7 @@ fn create_module(path: Option<String>, name: Option<String>) -> () {
             CRUD_FILES.map(|operation| {
                 // Opr as file name.
                 let file_path = format!("{}/{}.rs", relative_path, operation);
-                let template_str = template::make_handler_content(operation).unwrap();
+                let template_str = template::handler_template::make(operation).unwrap();
                 fs::File::create(file_path)
                     .unwrap()
                     .write(template_str.as_bytes())
@@ -78,12 +80,12 @@ fn create_module(path: Option<String>, name: Option<String>) -> () {
 
             // Create mod.rs
             let mod_rs_path = format!("{}/mod.rs", relative_path);
-            let template_str = template::make_mod_rs_content(module_name.to_string()).unwrap();
+            let template_str = template::mod_template::make(module_name.to_string()).unwrap();
             fs::File::create(mod_rs_path)
                 .unwrap()
                 .write(template_str.as_bytes())
                 .unwrap();
-        }
+        },
         Err(why) => println!("! {:?}", why.kind()),
     }
 }

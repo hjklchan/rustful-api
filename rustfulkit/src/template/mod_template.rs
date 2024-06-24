@@ -3,52 +3,12 @@ use serde::Serialize;
 use std::error::Error;
 use tinytemplate::TinyTemplate;
 
-// TODO: Do some optimisation
-// 1. Error handing
-// 2. Organize path-related variables
-// 3. Split into separate files or modules
-
-#[derive(Serialize)]
-struct HandlerContext<'a> {
-    operation: &'a str,
-}
-
-static HANDLER_TEMPLATE : &'static str = r#"
-use axum::extract::State;
-
-use crate::\{
-    app_state::AppState,
-    http::\{error::ServiceError, response::Response, OhMyResult},
-};
-
-pub async fn {operation}_handler(
-    State(AppState \{ ref pool }): State<AppState>
-) -> OhMyResult<Response<()>> \{
-    // Do something here
-    // ...
-    OhMyResult::Ok(Response::Ok)
-}
-
-"#;
-
-pub fn make_handler_content(operation: impl AsRef<str>) -> Result<String, Box<dyn Error>> {
-    let mut tt = TinyTemplate::new();
-    tt.add_template("handler", HANDLER_TEMPLATE)?;
-
-    let context = HandlerContext {
-        operation: operation.as_ref(),
-    };
-
-    let rendered = tt.render("handler", &context)?;
-
-    Ok(rendered)
-}
-
 #[derive(Serialize)]
 pub struct ModRsContext<'a> {
     module_name: &'a str,
 }
 
+// Define a TEMPLATE for creating mod file
 static MOD_RS_TEMPLATE : &'static str = r#"
 use crate::app_state::AppState;
 use axum::\{routing, Router};
@@ -71,7 +31,7 @@ pub fn routes(app_state: AppState) -> Router \{
 
 "#;
 
-pub fn make_mod_rs_content(module_name: impl AsRef<str>) -> Result<String, Box<dyn Error>> {
+pub fn make(module_name: impl AsRef<str>) -> Result<String, Box<dyn Error>> {
     let mut tt = TinyTemplate::new();
     tt.add_template("mod_rs", MOD_RS_TEMPLATE)?;
 
@@ -80,8 +40,6 @@ pub fn make_mod_rs_content(module_name: impl AsRef<str>) -> Result<String, Box<d
     };
 
     let rendered = tt.render("mod_rs", &context)?;
-
-    println!("{rendered}");
 
     Ok(rendered)
 }
