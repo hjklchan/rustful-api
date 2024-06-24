@@ -1,5 +1,5 @@
 use clap::{Args, Parser, Subcommand};
-use rustfulkit::template;
+use rustfulkit::template::{handler_template, mod_template};
 use std::{fs, io::Write};
 
 // TODO: Do some optimisation
@@ -71,7 +71,7 @@ fn create_module(path: Option<String>, name: Option<String>) -> () {
             CRUD_FILES.map(|operation| {
                 // Opr as file name.
                 let file_path = format!("{}/{}.rs", relative_path, operation);
-                let template_str = template::handler_template::make(operation).unwrap();
+                let template_str = handler_template::make(operation).unwrap();
                 fs::File::create(file_path)
                     .unwrap()
                     .write(template_str.as_bytes())
@@ -80,7 +80,7 @@ fn create_module(path: Option<String>, name: Option<String>) -> () {
 
             // Create mod.rs
             let mod_rs_path = format!("{}/mod.rs", relative_path);
-            let template_str = template::mod_template::make(module_name.to_string()).unwrap();
+            let template_str = mod_template::make(module_name.to_string()).unwrap();
             fs::File::create(mod_rs_path)
                 .unwrap()
                 .write(template_str.as_bytes())
