@@ -9,6 +9,7 @@ use error::ServiceError;
 pub type OhMyResult<T> = Result<T, ServiceError>;
 
 pub fn routes(app_state: AppState) -> Router {
+    // Register article module
     Router::new().merge(articles::routes(app_state))
 }
 
