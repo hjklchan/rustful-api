@@ -18,13 +18,18 @@ pub struct ListItem {
     pub description: Option<String>,
 }
 
+#[derive(Debug, FromRow)]
+struct TotalResult {
+    count: i64,
+}
+
 pub async fn list_handler(
     State(AppState { ref pool }): State<AppState>,
     Query(queries): Query<PaginationQueries>,
 ) -> OhMyResult<Response<ListItem>> {
     let sql = "SELECT COUNT(1) AS `count` FROM `articles` WHERE `deleted_at` IS NULL";
-    let d = sqlx::query(sql).execute(pool).await.map_err(|err| ServiceError::SqlxError(err)).map(|res| {})?;
-    
+    let total_result: TotalResult = sqlx::query_as(sql).fetch_one(pool).await.map_err(|err| ServiceError::SqlxError(err))?;
+
     let limit_sql = queries
         .to_sql()
         .map_err(|err| ServiceError::PaginationError(err))?;
@@ -47,7 +52,7 @@ pub async fn list_handler(
             items,
             page: queries.page(),
             size: queries.size(),
-            total: 1,
+            total: queries.total_page(total_result.count),
         },
     )))
 }

@@ -23,10 +23,7 @@ pub struct PaginationQueries {
 // TODO: Default
 impl Default for PaginationQueries {
     fn default() -> Self {
-        Self {
-            page: Default::default(),
-            size: Default::default(),
-        }
+        Self { page: 1, size: 10 }
     }
 }
 
@@ -36,16 +33,9 @@ impl PaginationQueries {
             return Err(PaginationError::LimitExceeded);
         }
 
-        let page = if self.page <= 0 { 1 } else { self.page };
-        let size = if self.size <= 0 {
-            DEFAULT_LIMIT
-        } else {
-            self.size
-        };
-
         // Calculate offset
-        let limit = size;
-        let offset = (page - 1) * limit;
+        let limit = self.size();
+        let offset = (self.page() - 1) * limit;
         // Output sql of string type
         Ok(format!("LIMIT {} OFFSET {}", limit, offset))
     }
@@ -53,10 +43,22 @@ impl PaginationQueries {
 
 impl PaginationQueries {
     pub fn page(self) -> i64 {
-        self.page
+        if self.page <= 0 {
+            1
+        } else {
+            self.page
+        }
     }
 
     pub fn size(self) -> i64 {
-        self.size
+        if self.size <= 0 {
+            DEFAULT_LIMIT
+        } else {
+            self.size
+        }
+    }
+
+    pub fn total_page(self, total: i64) -> i64 {
+        total / self.size()
     }
 }
