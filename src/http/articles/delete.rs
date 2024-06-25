@@ -15,6 +15,6 @@ pub async fn delete_handler(
         .bind(article_id)
         .execute(pool)
         .await
-        .map(|_| OhMyResult::Ok(Response::Ok))
+        .map(|_| OhMyResult::Ok(Response::NoContent))
         .map_err(|err| ServiceError::SqlxError(err))?
 }

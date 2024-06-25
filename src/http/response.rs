@@ -3,8 +3,8 @@ use reqwest::StatusCode;
 use serde::Serialize;
 
 pub enum Response<T> {
-    Ok,
     Created,
+    NoContent,
     Data(T),
     PaginationData(Pagination<T>),
 }
@@ -15,8 +15,8 @@ where
 {
     fn into_response(self) -> axum::response::Response {
         match self {
-            Self::Ok => (StatusCode::OK).into_response(),
-            Self::Created => (StatusCode::CREATED).into_response(),
+            Self::Created => StatusCode::CREATED.into_response(),
+            Self::NoContent => StatusCode::OK.into_response(),
             // Ordinary data
             // 普通数据
             Self::Data(data) => (StatusCode::OK, Json(data)).into_response(),
