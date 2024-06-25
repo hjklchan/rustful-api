@@ -1,17 +1,20 @@
-use std::net::SocketAddr;
+use std::{net::SocketAddr, str::FromStr};
 
 use axum::http::Method;
-use rustful_api::{app_state::AppState, db, http};
+use rustful_api::{app_state::AppState, db, http, settings};
 use tokio::net::TcpListener;
 use tower_http::cors::{self, CorsLayer};
 
 #[tokio::main]
 async fn main() {
+    // 初始化配置
+    let settings = settings::Settings::new().unwrap();
+
     // 初始化日志
     tracing_subscriber::fmt::init();
 
     // 初始化数据库连接池
-    let db_pool = db::must_connect_pool("mysql://root:@127.0.0.1:3306/rustful_api").await;
+    let db_pool = db::must_connect_pool(settings.database.url).await;
     tracing::info!("Database is connected");
 
     // 实例化全局状态
@@ -30,8 +33,8 @@ async fn main() {
         ]),
     );
     // 启动服务
-    let socket_addr = SocketAddr::from(([0, 0, 0, 0], 8888));
+    let socket_addr = SocketAddr::from_str(settings.server.addr.as_str()).unwrap();
     let tcp_listener = TcpListener::bind(socket_addr).await.unwrap();
-    tracing::info!("Listen on http://127.0.0.1:8888");
+    tracing::info!("Listen on http://{}", socket_addr);
     axum::serve(tcp_listener, app).await.unwrap();
 }
