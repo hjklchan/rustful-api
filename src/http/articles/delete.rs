@@ -8,13 +8,13 @@ use crate::{
 pub async fn delete_handler(
     State(AppState { ref pool }): State<AppState>,
     Path(article_id): Path<u64>,
-) -> OhMyResult<Response<()>> {
+) -> OhMyResult<Response> {
     let sql = "UPDATE `articles` SET `deleted_at` = NOW() WHERE `id` = ?";
 
     sqlx::query(sql)
         .bind(article_id)
         .execute(pool)
         .await
-        .map(|_| OhMyResult::Ok(Response::NoContent))
+        .map(|_| Ok(Response::NoContent))
         .map_err(|err| ServiceError::SqlxError(err))?
 }

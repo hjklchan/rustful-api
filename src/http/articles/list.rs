@@ -22,6 +22,9 @@ pub async fn list_handler(
     State(AppState { ref pool }): State<AppState>,
     Query(queries): Query<PaginationQueries>,
 ) -> OhMyResult<Response<ListItem>> {
+    let sql = "SELECT COUNT(1) AS `count` FROM `articles` WHERE `deleted_at` IS NULL";
+    let d = sqlx::query(sql).execute(pool).await.map_err(|err| ServiceError::SqlxError(err)).map(|res| {})?;
+    
     let limit_sql = queries
         .to_sql()
         .map_err(|err| ServiceError::PaginationError(err))?;
@@ -42,8 +45,8 @@ pub async fn list_handler(
     Ok(Response::PaginationData(Pagination::Offset(
         OffsetPagination {
             items,
-            page: 1,
-            size: 10,
+            page: queries.page(),
+            size: queries.size(),
             total: 1,
         },
     )))

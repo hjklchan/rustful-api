@@ -6,7 +6,7 @@ use crate::app_state::AppState;
 use axum::Router;
 use error::ServiceError;
 
-pub type OhMyResult<T> = Result<T, ServiceError>;
+pub type OhMyResult<T> = std::result::Result<T, ServiceError>;
 
 pub fn routes(app_state: AppState) -> Router {
     // Register article module

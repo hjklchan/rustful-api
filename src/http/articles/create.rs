@@ -16,7 +16,7 @@ pub struct CreatePayload {
 pub async fn create_handler(
     State(AppState { ref pool }): State<AppState>,
     Json(req): Json<CreatePayload>,
-) -> OhMyResult<Response<()>> {
+) -> OhMyResult<Response> {
     let sql = r#"
         INSERT INTO `articles` ( `title`, `description`, `body`, `created_at`, `updated_at` )
         VALUES ( ?, ?, ?, NOW(), NOW() )
@@ -31,5 +31,5 @@ pub async fn create_handler(
         .map_err(|err| ServiceError::SqlxError(err))
         .map(|_| {})?;
 
-    OhMyResult::Ok(Response::Created)
+    Ok(Response::Created)
 }

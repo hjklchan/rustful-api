@@ -2,7 +2,7 @@ use axum::{response::IntoResponse, Json};
 use reqwest::StatusCode;
 use serde::Serialize;
 
-pub enum Response<T> {
+pub enum Response<T = ()> {
     Created,
     NoContent,
     Data(T),
