@@ -47,12 +47,16 @@ pub async fn list_handler(
                 err => ServiceError::SqlxError(err),
             })?;
 
+    let total_page = queries.total_page(total_result.count);
+    let (prev_query, next_query) = queries.page_cursors(total_page);
     Ok(Response::PaginationData(Pagination::Offset(
         OffsetPagination {
             items,
             page: queries.page(),
             size: queries.size(),
-            total: queries.total_page(total_result.count),
+            total: total_page,
+            prev_query,
+            next_query,
         },
     )))
 }

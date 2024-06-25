@@ -49,6 +49,8 @@ pub struct OffsetPagination<T> {
     pub page: i64,
     pub size: i64,
     pub total: i64,
+    pub prev_query: Option<String>,
+    pub next_query: Option<String>,
 }
 
 #[derive(Debug, Serialize)]

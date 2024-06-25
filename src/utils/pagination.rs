@@ -12,19 +12,15 @@ pub enum PaginationError {
 
 // TODO: PaginationQueries 应该实现 FromRequest 或者 FromRequestParts
 // TODO: PaginationQueries should implements FromRequest or FromRequestParts
+// ! 应该通过 PaginationQueries 转为 PaginationUtil 等等...
+// !!
+// ! 为 PaginationUtil 实现 From<PaginationQueries> 特征
 #[derive(Debug, Deserialize, Clone, Copy)]
 pub struct PaginationQueries {
     #[serde(default)]
     page: i64,
     #[serde(default)]
     size: i64,
-}
-
-// TODO: Default
-impl Default for PaginationQueries {
-    fn default() -> Self {
-        Self { page: 1, size: 10 }
-    }
 }
 
 impl PaginationQueries {
@@ -60,5 +56,16 @@ impl PaginationQueries {
 
     pub fn total_page(self, total: i64) -> i64 {
         total / self.size()
+    }
+
+    pub fn page_cursors(self, total_page: i64) -> (Option<String>, Option<String>) {
+        (
+            Some(format!("page={}&size={}", self.page() - 1, self.size())),
+            if self.page() + 1 > total_page {
+                None
+            } else {
+                Some(format!("page={}&size={}", self.page() + 1, self.size()))
+            },
+        )
     }
 }
