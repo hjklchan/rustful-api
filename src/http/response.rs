@@ -46,9 +46,9 @@ pub struct CursorPagination<T> {
 #[derive(Debug, Serialize)]
 pub struct OffsetPagination<T> {
     pub items: Vec<T>,
-    pub page: i64,
-    pub size: i64,
-    pub total: i64,
+    pub page: u64,
+    pub size: u64,
+    pub total: u64,
     pub prev_query: Option<String>,
     pub next_query: Option<String>,
 }

@@ -5,7 +5,7 @@ use crate::{
         response::{OffsetPagination, Pagination, Response},
         OhMyResult,
     },
-    utils::pagination::PaginationQueries,
+    utils::pagination::{PaginationQueries, PaginationUtil},
 };
 use axum::extract::{Query, State};
 use serde::Serialize;
@@ -27,10 +27,15 @@ pub async fn list_handler(
     State(AppState { ref pool }): State<AppState>,
     Query(queries): Query<PaginationQueries>,
 ) -> OhMyResult<Response<ListItem>> {
-    let sql = "SELECT COUNT(1) AS `count` FROM `articles` WHERE `deleted_at` IS NULL";
-    let total_result: TotalResult = sqlx::query_as(sql).fetch_one(pool).await.map_err(|err| ServiceError::SqlxError(err))?;
+    let mut pagination: PaginationUtil = queries.into();
 
-    let limit_sql = queries
+    let sql = "SELECT COUNT(1) AS `count` FROM `articles` WHERE `deleted_at` IS NULL";
+    let total_result: TotalResult = sqlx::query_as(sql)
+        .fetch_one(pool)
+        .await
+        .map_err(|err| ServiceError::SqlxError(err))?;
+
+    let limit_sql = pagination
         .to_sql()
         .map_err(|err| ServiceError::PaginationError(err))?;
 
@@ -47,13 +52,14 @@ pub async fn list_handler(
                 err => ServiceError::SqlxError(err),
             })?;
 
-    let total_page = queries.total_page(total_result.count);
-    let (prev_query, next_query) = queries.page_cursors(total_page);
+    pagination.set_total_date_size(total_result.count as u64);
+    let total_page = pagination.total_page();
+    let (prev_query, next_query) = pagination.cursors();
     Ok(Response::PaginationData(Pagination::Offset(
         OffsetPagination {
             items,
-            page: queries.page(),
-            size: queries.size(),
+            page: pagination.get_page(),
+            size: pagination.get_size(),
             total: total_page,
             prev_query,
             next_query,
