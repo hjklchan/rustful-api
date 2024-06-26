@@ -74,6 +74,7 @@ pub struct PaginationUtil {
     total_data_size: u64,
 }
 
+// 将 PaginationQuery 转为 PaginationUtil
 impl From<PaginationQuery> for PaginationUtil {
     fn from(value: PaginationQuery) -> Self {
         Self {
@@ -85,11 +86,11 @@ impl From<PaginationQuery> for PaginationUtil {
 }
 
 impl PaginationUtil {
-    pub fn set_total_date_size(&mut self, total: u64) {
+    pub fn set_total_size(&mut self, total: u64) {
         self.total_data_size = total
     }
 
-    pub fn get_total_data_size(&self) -> u64 {
+    pub fn get_total_size(&self) -> u64 {
         self.total_data_size
     }
 
@@ -110,7 +111,7 @@ impl PaginationUtil {
     }
 
     pub fn total_page(&self) -> u64 {
-        self.get_total_data_size() / self.get_size()
+        self.get_total_size() / self.get_size()
     }
 
     pub fn cursors(&self) -> (Option<String>, Option<String>) {

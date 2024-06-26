@@ -27,13 +27,13 @@ pub async fn list_handler(
     State(AppState { ref pool }): State<AppState>,
     Query(queries): Query<PaginationQuery>,
 ) -> OhMyResult<Response<ListItem>> {
-    let mut pagination: PaginationUtil = queries.into();
-
     let sql = "SELECT COUNT(1) AS `count` FROM `articles` WHERE `deleted_at` IS NULL";
     let total_result: TotalResult = sqlx::query_as(sql)
         .fetch_one(pool)
         .await
         .map_err(|err| ServiceError::SqlxError(err))?;
+
+    let mut pagination: PaginationUtil = queries.into();
 
     let limit_sql = pagination
         .to_sql()
@@ -52,7 +52,7 @@ pub async fn list_handler(
                 err => ServiceError::SqlxError(err),
             })?;
 
-    pagination.set_total_date_size(total_result.count as u64);
+    pagination.set_total_size(total_result.count as u64);
     let total_page = pagination.total_page();
     let (prev_query, next_query) = pagination.cursors();
     Ok(Response::PaginationData(Pagination::Offset(
