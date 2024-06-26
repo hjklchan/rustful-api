@@ -1,6 +1,8 @@
 pub mod error;
 pub mod response;
+
 pub mod articles;
+pub mod route_not_found;
 
 use crate::app_state::AppState;
 use axum::Router;
@@ -10,7 +12,10 @@ pub type OhMyResult<T> = std::result::Result<T, ServiceError>;
 
 pub fn routes(app_state: AppState) -> Router {
     // Register article module
-    Router::new().merge(articles::routes(app_state))
+    Router::new()
+        .merge(articles::routes(app_state))
+        // other modules...
+        .fallback(route_not_found::route_not_found_handler)
 }
 
 pub fn router_with_state(app_state: AppState) -> Router {
