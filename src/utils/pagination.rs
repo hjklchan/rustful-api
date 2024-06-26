@@ -19,20 +19,6 @@ pub struct PaginationQuery {
 }
 
 impl PaginationQuery {
-    pub fn to_sql(&self) -> Result<String, PaginationError> {
-        if self.size > MAX_LIMIT {
-            return Err(PaginationError::LimitExceeded);
-        }
-
-        // Calculate offset
-        let limit = self.size();
-        let offset = (self.page() - 1) * limit;
-        // Output sql of string type
-        Ok(format!("LIMIT {} OFFSET {}", limit, offset))
-    }
-}
-
-impl PaginationQuery {
     pub fn page(self) -> i64 {
         if self.page <= 0 {
             1
@@ -71,7 +57,7 @@ pub struct PaginationUtil {
     // 当前一夜展示多少条
     size: u64,
     // 总数据量
-    total_data_size: u64,
+    total: u64,
 }
 
 // 将 PaginationQuery 转为 PaginationUtil
@@ -80,18 +66,18 @@ impl From<PaginationQuery> for PaginationUtil {
         Self {
             page: value.page as u64,
             size: value.size as u64,
-            total_data_size: Default::default(),
+            total: Default::default(),
         }
     }
 }
 
 impl PaginationUtil {
     pub fn set_total_size(&mut self, total: u64) {
-        self.total_data_size = total
+        self.total = total
     }
 
     pub fn get_total_size(&self) -> u64 {
-        self.total_data_size
+        self.total
     }
 
     pub fn get_page(&self) -> u64 {
