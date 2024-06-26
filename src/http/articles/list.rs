@@ -5,7 +5,7 @@ use crate::{
         response::{OffsetPagination, Pagination, Response},
         OhMyResult,
     },
-    utils::pagination::{PaginationQueries, PaginationUtil},
+    utils::pagination::{PaginationQuery, PaginationUtil},
 };
 use axum::extract::{Query, State};
 use serde::Serialize;
@@ -25,7 +25,7 @@ struct TotalResult {
 
 pub async fn list_handler(
     State(AppState { ref pool }): State<AppState>,
-    Query(queries): Query<PaginationQueries>,
+    Query(queries): Query<PaginationQuery>,
 ) -> OhMyResult<Response<ListItem>> {
     let mut pagination: PaginationUtil = queries.into();
 

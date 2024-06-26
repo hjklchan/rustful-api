@@ -10,20 +10,15 @@ pub enum PaginationError {
     LimitExceeded,
 }
 
-// TODO: PaginationQueries 应该实现 FromRequest 或者 FromRequestParts
-// TODO: PaginationQueries should implements FromRequest or FromRequestParts
-// ! 应该通过 PaginationQueries 转为 PaginationUtil 等等...
-// !!
-// ! 为 PaginationUtil 实现 From<PaginationQueries> 特征
 #[derive(Debug, Deserialize, Clone, Copy)]
-pub struct PaginationQueries {
+pub struct PaginationQuery {
     #[serde(default)]
     page: i64,
     #[serde(default)]
     size: i64,
 }
 
-impl PaginationQueries {
+impl PaginationQuery {
     pub fn to_sql(&self) -> Result<String, PaginationError> {
         if self.size > MAX_LIMIT {
             return Err(PaginationError::LimitExceeded);
@@ -37,7 +32,7 @@ impl PaginationQueries {
     }
 }
 
-impl PaginationQueries {
+impl PaginationQuery {
     pub fn page(self) -> i64 {
         if self.page <= 0 {
             1
@@ -79,8 +74,8 @@ pub struct PaginationUtil {
     total_data_size: u64,
 }
 
-impl From<PaginationQueries> for PaginationUtil {
-    fn from(value: PaginationQueries) -> Self {
+impl From<PaginationQuery> for PaginationUtil {
+    fn from(value: PaginationQuery) -> Self {
         Self {
             page: value.page as u64,
             size: value.size as u64,
