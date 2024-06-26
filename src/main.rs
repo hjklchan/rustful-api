@@ -36,5 +36,22 @@ async fn main() {
     let socket_addr = SocketAddr::from_str(settings.server.addr.as_str()).unwrap();
     let tcp_listener = TcpListener::bind(socket_addr).await.unwrap();
     tracing::info!("Listen on http://{}", socket_addr);
+    print_ascii_logo();
     axum::serve(tcp_listener, app).await.unwrap();
+}
+
+fn print_ascii_logo() -> () {
+    static LOGO: &str = r#"
+    /$$$$$$$ /$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$$$/$$   /$$/$$      
+    | $$__  $| $$  | $$/$$__  $|__  $$__| $$_____| $$  | $| $$      
+    | $$  \ $| $$  | $| $$  \__/  | $$  | $$     | $$  | $| $$      
+    | $$$$$$$| $$  | $|  $$$$$$   | $$  | $$$$$  | $$  | $| $$      
+    | $$__  $| $$  | $$\____  $$  | $$  | $$__/  | $$  | $| $$      
+    | $$  \ $| $$  | $$/$$  \ $$  | $$  | $$     | $$$$| $| $$$$$$$$
+    |__/  |__/\______/ \______/   |__/  |__/      \______/|________/
+
+    > Github: https://github.com/hjklchan/rustful-api
+    "#;
+
+    println!("{LOGO}");
 }
