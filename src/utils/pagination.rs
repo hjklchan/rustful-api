@@ -29,11 +29,44 @@ pub enum PaginationError {
 }
 
 #[derive(Debug, Deserialize, Clone, Copy)]
-pub struct PaginationQueries {
+pub struct PaginationQuery {
     #[serde(default)]
     page: i64,
     #[serde(default)]
     size: i64,
+}
+
+impl PaginationQuery {
+    pub fn page(self) -> i64 {
+        if self.page <= 0 {
+            1
+        } else {
+            self.page
+        }
+    }
+
+    pub fn size(self) -> i64 {
+        if self.size <= 0 {
+            DEFAULT_LIMIT
+        } else {
+            self.size
+        }
+    }
+
+    pub fn total_page(self, total: i64) -> i64 {
+        total / self.size()
+    }
+
+    pub fn page_cursors(self, total_page: i64) -> (Option<String>, Option<String>) {
+        (
+            Some(format!("page={}&size={}", self.page() - 1, self.size())),
+            if self.page() + 1 > total_page {
+                None
+            } else {
+                Some(format!("page={}&size={}", self.page() + 1, self.size()))
+            },
+        )
+    }
 }
 
 pub struct PaginationUtil {
@@ -42,26 +75,27 @@ pub struct PaginationUtil {
     // 当前一夜展示多少条
     size: u64,
     // 总数据量
-    total_data_size: u64,
+    total: u64,
 }
 
-impl From<PaginationQueries> for PaginationUtil {
-    fn from(value: PaginationQueries) -> Self {
+// 将 PaginationQuery 转为 PaginationUtil
+impl From<PaginationQuery> for PaginationUtil {
+    fn from(value: PaginationQuery) -> Self {
         Self {
             page: value.page as u64,
             size: value.size as u64,
-            total_data_size: Default::default(),
+            total: Default::default(),
         }
     }
 }
 
 impl PaginationUtil {
-    pub fn set_total_date_size(&mut self, total: u64) {
-        self.total_data_size = total
+    pub fn set_total_size(&mut self, total: u64) {
+        self.total = total
     }
 
-    pub fn get_total_data_size(&self) -> u64 {
-        self.total_data_size
+    pub fn get_total_size(&self) -> u64 {
+        self.total
     }
 
     pub fn get_page(&self) -> u64 {
@@ -81,7 +115,7 @@ impl PaginationUtil {
     }
 
     pub fn total_page(&self) -> u64 {
-        self.get_total_data_size() / self.get_size()
+        self.get_total_size() / self.get_size()
     }
 
     pub fn cursors(&self) -> (Option<String>, Option<String>) {
