@@ -8,7 +8,11 @@ use tower_http::cors::{self, CorsLayer};
 #[tokio::main]
 async fn main() {
     // 初始化配置
-    let settings = settings::Settings::new().unwrap();
+    let settings = settings::Settings::new()
+        .map_err(|err| {
+            eprintln!("An error occurred while initialising the configuration, err: {err}")
+        })
+        .unwrap();
 
     // 初始化日志
     tracing_subscriber::fmt::init();
