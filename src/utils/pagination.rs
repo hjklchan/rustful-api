@@ -1,8 +1,24 @@
 use serde::Deserialize;
 use thiserror::Error;
 
+/// ### 创建 Trait 名为 PaginatorParts
+/// TODO or Deprecated it
+/// 
+/// ```rust
+/// trait PaginatorParts {
+///     fn page(self) -> i64;
+///     fn size(self) -> i64;
+/// }
+/// ```
+pub struct Introduction;
+
 static MAX_LIMIT: i64 = 100;
 static DEFAULT_LIMIT: i64 = 10;
+
+pub trait PaginatorParts {
+    fn page(self) -> i64;
+    fn size(self) -> i64;
+}
 
 #[derive(Debug, Error)]
 pub enum PaginationError {
@@ -102,11 +118,19 @@ impl PaginationUtil {
 
     pub fn cursors(&self) -> (Option<String>, Option<String>) {
         (
-            Some(format!("page={}&size={}", self.get_page() - 1, self.get_size())),
+            Some(format!(
+                "page={}&size={}",
+                self.get_page() - 1,
+                self.get_size()
+            )),
             if self.get_page() + 1 > self.total_page() {
                 None
             } else {
-                Some(format!("page={}&size={}", self.get_page() + 1, self.get_size()))
+                Some(format!(
+                    "page={}&size={}",
+                    self.get_page() + 1,
+                    self.get_size()
+                ))
             },
         )
     }
