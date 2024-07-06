@@ -15,7 +15,6 @@ pub fn routes(app_state: AppState) -> Router {
     Router::new()
         .merge(articles::routes(app_state))
         // other modules...
-        .fallback(route_not_found::route_not_found_handler)
 }
 
 pub fn router_with_state(app_state: AppState) -> Router {
