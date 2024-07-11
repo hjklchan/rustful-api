@@ -15,6 +15,8 @@ pub enum ServiceError {
     RouteNotFound,
     #[error(transparent)]
     PaginationError(#[from] PaginationError),
+    #[error("Missing auth token")]
+    AuthError,
 }
 
 impl IntoResponse for ServiceError {
@@ -30,6 +32,7 @@ impl IntoResponse for ServiceError {
             Self::NotFound => (StatusCode::NOT_FOUND, "RESOURCE_NOT_FOUND"),
             Self::RouteNotFound => (StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND"),
             Self::PaginationError(_) => (StatusCode::BAD_REQUEST, "PAGINATION_ERROR"),
+            Self::AuthError => (StatusCode::UNAUTHORIZED, "AUTH_ERROR"),
         };
 
         (status_code, ErrResponse::new(code, message)).into_response()
